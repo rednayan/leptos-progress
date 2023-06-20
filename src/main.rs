@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ev::SubmitEvent, html::Input, *};
 
 fn main() {
     mount_to_body(|cx| view! { cx,  <App /> })
@@ -39,6 +39,8 @@ fn App(cx: Scope) -> impl IntoView {
         />
         <ul> {values.into_iter().map(|x| view! {cx, <li>{x}</li>}).collect::<Vec<_>>()}</ul>
         <DynamicList initial_length = 10/>
+        <ControlledForm />
+        <UncontrolledFrom />
     }
 }
 
@@ -105,5 +107,39 @@ fn DynamicList(cx: Scope, initial_length: usize) -> impl IntoView {
                 />
             </ul>
         </div>
+    }
+}
+
+#[component]
+fn ControlledForm(cx: Scope) -> impl IntoView {
+    let (name, set_name) = create_signal(cx, "controlled form".to_string());
+    view! {
+        cx,
+        <input
+            on:input = move |ev| {
+                set_name(event_target_value(&ev))
+            }
+        />
+        <p> {move || name()} </p>
+    }
+}
+
+#[component]
+fn UncontrolledFrom(cx: Scope) -> impl IntoView {
+    let (name, set_name) = create_signal(cx, "uncontrolled form".to_string());
+    let input_element: NodeRef<Input> = create_node_ref(cx);
+    let on_submit = move |ev: SubmitEvent| {
+        ev.prevent_default();
+        let value = input_element().expect("<input> to exist").value();
+        set_name(value);
+    };
+    view! {
+        cx,
+        <form on:submit=on_submit>
+            <input type="text" value=name node_ref = input_element/>
+            <input type="submit" value="submit" />
+        </form>
+        <p>{name}</p>
+
     }
 }
