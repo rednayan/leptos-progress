@@ -112,13 +112,14 @@ fn DynamicList(cx: Scope, initial_length: usize) -> impl IntoView {
 
 #[component]
 fn ControlledForm(cx: Scope) -> impl IntoView {
-    let (name, set_name) = create_signal(cx, "controlled form".to_string());
+    let (name, set_name) = create_signal(cx, "controlled".to_string());
     view! {
         cx,
         <input
             on:input = move |ev| {
                 set_name(event_target_value(&ev))
             }
+        prop:value = name
         />
         <p> {move || name()} </p>
     }
