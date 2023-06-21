@@ -12,6 +12,7 @@ fn App(cx: Scope) -> impl IntoView {
     let (progress, set_progress) = create_signal(cx, 0);
     let double_progress = move || progress() * 2;
     let values = vec![1, 2, 3, 4];
+    let is_odd = move || count() & 1 == 1;
     view! {
         cx,
         <div
@@ -28,6 +29,11 @@ fn App(cx: Scope) -> impl IntoView {
         class:red = move ||
             count() % 2 == 1
         >
+        <p>{move || if is_odd() {
+            "Odd"
+        } else {
+                "Even"
+            }}</p>
         "Click me: "
         {move || count.get()}
         </button>
